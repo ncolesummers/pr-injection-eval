@@ -1,0 +1,17 @@
+# Secrets. op.env holds real 1Password secret references; .env holds real keys.
+op.env
+.env
+.env.*
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+dist/
+
+# Scratch logs from ad hoc runs. Only the dated full-run logs under logs/ are kept.
+logs/pilot-*/
+logs/demo-*/
+logs/scratch/
