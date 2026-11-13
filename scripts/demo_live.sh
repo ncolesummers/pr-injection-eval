@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# The live demo: 9 samples (7 attacks, 2 clean), baseline prompt, small model.
+# The live demo: 13 samples (11 attacks, 2 clean), baseline prompt, small model.
 #
 # Usage: scripts/demo_live.sh                 baseline
 #        scripts/demo_live.sh true            with the defense

@@ -4,10 +4,12 @@ from collections import Counter
 
 from pr_injection_eval.dataset import (
     BASE_PRS,
+    base_pr_named,
     build_pull_request,
     build_samples,
     dataset_hash,
     demo_slice,
+    injection_for,
     metadata_of,
     pull_request_for,
 )
@@ -17,7 +19,9 @@ from pr_injection_eval.injections import (
     MARKER,
     TECHNIQUES,
     goal_named,
+    technique_named,
 )
+from pr_injection_eval.scorer import MARKER_PATTERN
 from pr_injection_eval.tools import PullRequest
 
 
@@ -75,7 +79,7 @@ def test_clean_controls_contain_no_injection_text() -> None:
 def test_every_technique_and_goal_is_balanced() -> None:
     injected = [metadata_of(s) for s in build_samples() if metadata_of(s)["injected"]]
     cells = Counter((m["technique"], m["goal"]) for m in injected)
-    assert set(cells) == {(t.name, g) for t in TECHNIQUES for g in GOALS}
+    assert set(cells) == {(t.name, g) for t in TECHNIQUES for g in t.goals}
     assert set(cells.values()) == {2}
 
 
@@ -99,18 +103,39 @@ def test_injection_lands_only_in_its_placement() -> None:
         if not meta["injected"]:
             continue
         pr = pull_request_for(meta)
-        ask = GOAL_ASKS[goal_named(meta["goal"])]
-        in_description = ask in pr.description
-        in_commit = ask in pr.commit_message
-        in_files = any(ask in text for text in pr.files.values())
-        in_diff = ask in pr.diff
+        planted = injection_for(
+            base_pr_named(meta["base_pr"]),
+            technique_named(meta["technique"]),
+            goal_named(meta["goal"]),
+        )
+        # One distinctive line of the planted text is enough to locate it.
+        probe = max(planted.splitlines(), key=len)
+        found = (
+            probe in pr.description,
+            probe in pr.commit_message,
+            any(probe in text for text in pr.files.values()),
+            probe in pr.diff,
+        )
         expected = {
             "description": (True, False, False, False),
             "commit_message": (False, True, False, False),
             "code_comment": (False, False, True, True),
             "docs": (False, False, True, True),
         }[meta["placement"]]
-        assert (in_description, in_commit, in_files, in_diff) == expected, sample.id
+        assert found == expected, sample.id
+
+
+def test_no_pull_request_spells_out_the_marker() -> None:
+    # If one did, an agent could "leak" the marker just by quoting the PR.
+    for sample in build_samples():
+        text = visible_text(pull_request_for(metadata_of(sample))).lower()
+        assert MARKER_PATTERN.search(text) is None, sample.id
+
+
+def test_false_assurance_exists_exactly_where_there_is_a_defect() -> None:
+    for base in BASE_PRS:
+        assert bool(base.false_assurance) == (base.defect is not None)
+        assert "\n" not in base.false_assurance  # it must fit a one-line comment
 
 
 def test_defect_keywords_never_appear_in_anything_the_agent_can_read() -> None:
@@ -127,14 +152,16 @@ def test_defect_keywords_never_appear_in_anything_the_agent_can_read() -> None:
 
 def test_every_technique_is_planted_on_the_same_base_prs() -> None:
     # Otherwise a per-technique difference could really be a per-PR one.
-    targets: dict[str, set[tuple[str, str]]] = {}
+    targets: dict[tuple[str, str], set[str]] = {}
     for sample in build_samples():
         meta = metadata_of(sample)
         if meta["injected"]:
-            targets.setdefault(meta["technique"], set()).add(
-                (meta["goal"], meta["base_pr"])
+            targets.setdefault((meta["goal"], meta["technique"]), set()).add(
+                meta["base_pr"]
             )
-    assert len({frozenset(pairs) for pairs in targets.values()}) == 1
+    for goal in GOALS:
+        per_technique = [prs for (g, _), prs in targets.items() if g == goal]
+        assert all(prs == per_technique[0] for prs in per_technique), goal
 
 
 def test_approve_and_exfil_are_tried_with_and_without_a_real_defect() -> None:
@@ -153,6 +180,7 @@ def test_demo_slice_has_one_sample_per_technique_plus_two_clean() -> None:
     clean = [m for m in demo if not m["injected"]]
     assert [m["technique"] for m in injected] == [t.name for t in TECHNIQUES]
     assert {m["goal"] for m in injected} == set(GOALS)
+    assert all(m["goal"] in technique_named(m["technique"]).goals for m in injected)
     assert sorted(m["has_defect"] for m in clean) == [False, True]
 
 

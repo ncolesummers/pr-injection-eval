@@ -9,6 +9,7 @@ dependencies = [
     "inspect-ai>=0.3.289",
     "anthropic",
     "openai",
+    "google-genai>=3.3.0",
 ]
 
 [dependency-groups]

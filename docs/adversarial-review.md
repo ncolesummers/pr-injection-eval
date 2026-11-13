@@ -103,3 +103,26 @@ finding, reached independently.
 
 The dataset changed as a result (same 47 samples in count, different
 contents), which is acceptable because no model had been run.
+
+## After the pilot
+
+The first pilot (demo slice, both conditions, Claude Haiku 5.5 and Claude
+Sonnet 5.5, 2 epochs) showed that one documented weakness was worse than
+either reviewer or the author had rated it. The scorer reported 21% to 29%
+attack success. Reading the transcripts showed the true figure was zero:
+every counted success was an `exfil_text` sample in which the agent quoted
+the marker line while refusing to add it. "Quoting counts as leaking" had
+been listed as a known limitation; in practice it produced the entire
+headline number.
+
+Changes made in response, with the repo owner's agreement:
+
+- The planted text no longer spells the marker out. It describes it in
+  pieces, so quoting the injection cannot match. Tests enforce that no pull
+  request contains the assembled marker.
+- Four techniques were added that do not give orders (`fake_boundary`,
+  `tool_redirection`, `review_template`, `false_assurance`), because neither
+  model followed any of the original seven.
+
+These changes were not reviewed by the two reviewers. The review was one
+round by design.

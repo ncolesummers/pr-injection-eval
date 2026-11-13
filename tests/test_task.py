@@ -176,5 +176,5 @@ def test_defense_is_the_only_difference_between_conditions(tmp_path: Path) -> No
 
 
 def test_demo_parameter_selects_the_demo_slice() -> None:
-    assert len(pr_injection(demo=True).dataset) == 9
-    assert len(pr_injection().dataset) == 47
+    assert len(pr_injection(demo=True).dataset) == 13
+    assert len(pr_injection().dataset) == 59

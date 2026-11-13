@@ -16,7 +16,7 @@ TASK="src/pr_injection_eval/task.py"
 run_eval() {
     if [[ -f op.env ]]; then
         op run --env-file=op.env -- uv run inspect eval "$TASK" "$@"
-    elif [[ -n "${ANTHROPIC_API_KEY:-}${OPENAI_API_KEY:-}" ]]; then
+    elif [[ -n "${ANTHROPIC_API_KEY:-}${OPENAI_API_KEY:-}${GOOGLE_API_KEY:-}" ]]; then
         uv run inspect eval "$TASK" "$@"
     else
         echo "No op.env file and no API key in the environment. See the README." >&2
