@@ -111,7 +111,7 @@ Prefix each with `uv run` (and `op run --env-file=op.env --` if you use
 
 | script | what it does |
 |---|---|
-| `scripts/demo_live.sh` | the demo slice, baseline, small model |
+| `scripts/demo_live.sh` | the demo slice, baseline, Gemini 3.1 Flash Lite (needs `GOOGLE_API_KEY`). About 20 seconds. |
 | `scripts/pilot.sh` | the demo slice, both conditions, both models, 2 epochs |
 | `scripts/full_runs.sh` | everything, both conditions, both models, 5 epochs |
 | `scripts/summarize.py <log dir>` | prints the results tables as markdown |
@@ -270,9 +270,14 @@ cannot establish.
 
 ## Results
 
+**Browse every transcript in your browser, with nothing to install:
+https://ncolesummers.github.io/pr-injection-eval/**
+
 Full runs on 2026-11-13: all 59 samples, both conditions, 5 epochs, three
 models. Logs are in [`logs/2026-11-13-1301`](logs/2026-11-13-1301); browse
-them with `uv run inspect view --log-dir logs/2026-11-13-1301`. The tables
+them with `uv run inspect view --log-dir logs/2026-11-13-1301`. The link
+above is a static copy of the same viewer, built with `inspect view bundle`
+and served from the `gh-pages` branch. The tables
 are the unedited output of `scripts/summarize.py`. The runs were started with:
 
 ```bash

@@ -4,6 +4,9 @@
 # variables, or pass model names as arguments to the scripts.
 SMALL_MODEL="${SMALL_MODEL:-anthropic/claude-haiku-5-5}"
 STRONG_MODEL="${STRONG_MODEL:-anthropic/claude-sonnet-5-5}"
+# The live demo uses the model that most often followed planted instructions
+# in the full runs, so there is something to look at on screen.
+DEMO_MODEL="${DEMO_MODEL:-google/gemini-3.1-flash-lite}"
 
 TASK="src/pr_injection_eval/task.py"
 
