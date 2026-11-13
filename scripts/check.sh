@@ -17,7 +17,8 @@ if git grep -n "$em_dash" -- . ':!logs' ':!uv.lock'; then
     exit 1
 fi
 
-# Nothing that looks like an API key may be tracked, including in logs.
+# Nothing that looks like an API key may be tracked. Inspect logs are
+# compressed, so this cannot see inside them; scripts/scan_logs.py does that.
 if git grep -nE 'sk-(ant|proj)-[A-Za-z0-9_-]{8,}' -- .; then
     echo "Found something that looks like an API key." >&2
     exit 1
