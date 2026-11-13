@@ -40,6 +40,9 @@ class Price:
 PRICES: dict[str, Price] = {
     "anthropic/claude-haiku-5-5": Price(0.10, 0.50, 0.01, 0.125),
     "anthropic/claude-sonnet-5-5": Price(2.00, 10.00, 0.10, 2.50),
+    # Gemini has no separate cache-write charge at these prompt sizes.
+    "google/gemini-3.1-flash-lite": Price(0.25, 1.50, 0.025, 0.25),
+    "google/gemini-4-hydrogen": Price(1.50, 7.50, 0.075, 1.50),
 }
 
 
