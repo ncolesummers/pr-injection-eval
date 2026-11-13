@@ -1,5 +1,6 @@
 # Secrets. op.env holds real 1Password secret references; .env holds real keys.
-op.env
+op.env*
+!op.env.example
 .env
 .env.*
 

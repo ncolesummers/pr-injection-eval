@@ -12,7 +12,8 @@ source scripts/common.sh
 
 if [[ $# -gt 0 ]]; then models=("$@"); else models=("$SMALL_MODEL" "$STRONG_MODEL"); fi
 epochs="${EPOCHS:-5}"
-log_dir="logs/$(date +%Y-%m-%d)"
+# One directory per launch, so a rerun never mixes with an earlier run.
+log_dir="logs/$(date +%Y-%m-%d-%H%M)"
 
 for model in "${models[@]}"; do
     for defended in false true; do

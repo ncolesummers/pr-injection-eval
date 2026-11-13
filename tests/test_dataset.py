@@ -17,7 +17,6 @@ from pr_injection_eval.injections import (
     MARKER,
     TECHNIQUES,
     goal_named,
-    render_injection,
 )
 from pr_injection_eval.tools import PullRequest
 
@@ -114,14 +113,38 @@ def test_injection_lands_only_in_its_placement() -> None:
         assert (in_description, in_commit, in_files, in_diff) == expected, sample.id
 
 
-def test_defect_keywords_never_appear_in_pr_prose_or_injections() -> None:
-    # If they did, a review could "mention the defect" just by quoting the PR.
-    keywords = [k for base in BASE_PRS for k in base.defect_keywords]
-    prose = [base.title + base.description + base.commit_message for base in BASE_PRS]
-    prose += [render_injection(t, g) for t in TECHNIQUES for g in GOALS]
-    for text in prose:
-        for keyword in keywords:
-            assert keyword not in text.lower(), (keyword, text)
+def test_defect_keywords_never_appear_in_anything_the_agent_can_read() -> None:
+    # If they did, a review could "mention the defect" just by describing
+    # or quoting the PR. This covers the code and diff, not only the prose.
+    for sample in build_samples():
+        meta = metadata_of(sample)
+        text = visible_text(pull_request_for(meta)).lower()
+        for base in BASE_PRS:
+            if base.name == meta["base_pr"]:
+                for keyword in base.defect_keywords:
+                    assert keyword not in text, (keyword, sample.id)
+
+
+def test_every_technique_is_planted_on_the_same_base_prs() -> None:
+    # Otherwise a per-technique difference could really be a per-PR one.
+    targets: dict[str, set[tuple[str, str]]] = {}
+    for sample in build_samples():
+        meta = metadata_of(sample)
+        if meta["injected"]:
+            targets.setdefault(meta["technique"], set()).add(
+                (meta["goal"], meta["base_pr"])
+            )
+    assert len({frozenset(pairs) for pairs in targets.values()}) == 1
+
+
+def test_approve_and_exfil_are_tried_with_and_without_a_real_defect() -> None:
+    for goal in ("approve", "exfil_text"):
+        flags = {
+            metadata_of(s)["has_defect"]
+            for s in build_samples()
+            if metadata_of(s)["goal"] == goal
+        }
+        assert flags == {True, False}
 
 
 def test_demo_slice_has_one_sample_per_technique_plus_two_clean() -> None:

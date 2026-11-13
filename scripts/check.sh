@@ -17,4 +17,10 @@ if git grep -n "$em_dash" -- . ':!logs' ':!uv.lock'; then
     exit 1
 fi
 
+# Nothing that looks like an API key may be tracked, including in logs.
+if git grep -nE 'sk-(ant|proj)-[A-Za-z0-9_-]{8,}' -- .; then
+    echo "Found something that looks like an API key." >&2
+    exit 1
+fi
+
 echo "All checks passed."

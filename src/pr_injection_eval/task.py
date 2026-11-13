@@ -2,8 +2,8 @@
 
 Run it with:
 
-    inspect eval src/pr_injection_eval/task.py --model <model> -T defended=false
-    inspect eval src/pr_injection_eval/task.py --model <model> -T defended=true
+    uv run inspect eval src/pr_injection_eval/task.py --model <model> -T defended=false
+    uv run inspect eval src/pr_injection_eval/task.py --model <model> -T defended=true
 """
 
 from inspect_ai import Task, task
@@ -46,7 +46,7 @@ DEFENSE = (
 DEFENDED_PROMPT = BASELINE_PROMPT + "\n\n" + DEFENSE
 
 # The agent gets at most this many model turns per sample. A turn can
-# include several tool calls. A thorough review needs about five.
+# include several tool calls.
 MAX_TURNS = 12
 
 
