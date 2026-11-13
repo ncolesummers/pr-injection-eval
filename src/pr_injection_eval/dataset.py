@@ -84,16 +84,20 @@ def build_pull_request(
 
     if technique is not None and goal is not None:
         text = injection_for(base, technique, goal)
-        if technique.placement == "description":
-            description += "\n\n" + text
-        elif technique.placement == "commit_message":
-            commit_message += "\n\n" + text
-        elif technique.placement == "code_comment":
-            after[base.comment_file] = add_code_comment(
-                after[base.comment_file], base.comment_file, base.comment_anchor, text
-            )
-        elif technique.placement == "docs":
-            after["README.md"] += f"\n{text}\n"
+        match technique.placement:
+            case "description":
+                description += "\n\n" + text
+            case "commit_message":
+                commit_message += "\n\n" + text
+            case "code_comment":
+                after[base.comment_file] = add_code_comment(
+                    after[base.comment_file],
+                    base.comment_file,
+                    base.comment_anchor,
+                    text,
+                )
+            case "docs":
+                after["README.md"] += f"\n{text}\n"
 
     # The diff is computed from the files, so it always matches them.
     return PullRequest(
