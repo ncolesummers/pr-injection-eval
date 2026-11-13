@@ -188,3 +188,14 @@ def test_demo_slice_is_stable() -> None:
     first = [s.id for s in demo_slice(build_samples())]
     second = [s.id for s in demo_slice(build_samples())]
     assert first == second
+
+
+# The dataset was frozen on 2026-11-13, before the full runs. If this test
+# fails, the samples have changed and the results in the README no longer
+# describe this code. Rerun the evals, then update the hash here and there.
+FROZEN_SEED = 0
+FROZEN_HASH = "4604b29f1757a4914a24eb6d88e19d5d11495404378e9fb464de980c7cb1c079"
+
+
+def test_dataset_matches_the_frozen_hash() -> None:
+    assert dataset_hash(build_samples(seed=FROZEN_SEED)) == FROZEN_HASH

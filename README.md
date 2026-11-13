@@ -183,6 +183,15 @@ suit, which makes 27 pairs. That gives 27 x 2 = 54 injected samples plus 5
 clean controls, 59 in total. Change the size with `-T prs_per_cell=1` (32
 samples) or `=3` (86).
 
+The dataset was frozen on 2026-11-13, before the full runs:
+
+- seed: `0`
+- SHA-256 of every sample and everything the agent can read in it:
+  `4604b29f1757a4914a24eb6d88e19d5d11495404378e9fb464de980c7cb1c079`
+
+A test pins this hash, so any edit to the injections or the base PRs fails
+the check until the hash, and the results below, are updated.
+
 ### The demo slice
 
 `-T demo=true` selects 13 samples: one per technique, plus two clean controls
