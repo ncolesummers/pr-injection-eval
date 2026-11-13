@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# The live demo: 9 samples (7 attacks, 2 clean), baseline prompt, small model.
+#
+# Usage: scripts/demo_live.sh                 baseline
+#        scripts/demo_live.sh true            with the defense
+#        scripts/demo_live.sh false <model>   a different model
+set -euo pipefail
+cd "$(dirname "$0")/.."
+source scripts/common.sh
+
+defended="${1:-false}"
+model="${2:-$SMALL_MODEL}"
+
+run_eval --model "$model" -T demo=true -T defended="$defended" \
+    --log-dir "logs/demo-$(date +%Y-%m-%d)"

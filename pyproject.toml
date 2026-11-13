@@ -37,6 +37,8 @@ select = ["E", "F", "I", "UP", "B", "ANN"]
 [tool.ruff.lint.per-file-ignores]
 # Fixture text (source files, diffs) is kept verbatim, so long lines are fine.
 "src/pr_injection_eval/dataset.py" = ["E501"]
+# Table rows read better on one line.
+"scripts/summarize.py" = ["E501"]
 
 [tool.pyright]
 include = ["src", "tests", "scripts"]
